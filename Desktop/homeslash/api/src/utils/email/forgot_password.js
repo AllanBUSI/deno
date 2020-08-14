@@ -1,6 +1,6 @@
 module.exports = {
     email: (email, name) => {
-        return `<!DOCTYPE html>
+        return console.log("email") + `<!DOCTYPE html>
         <html>
         
         <head>
@@ -112,7 +112,7 @@ module.exports = {
         
             <!-- start preheader -->
             <div class="preheader" style="display: none; max-width: 0; max-height: 0; overflow: hidden; font-size: 1px; line-height: 1px; color: #fff; opacity: 0;">
-                Bonjour ` + name + `, <br> Attention Login !
+                Bonjour ` + name + `, <br>  !
             </div>
             <!-- end preheader -->
         
@@ -154,7 +154,7 @@ module.exports = {
                         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 980px;">
                             <tr>
                                 <td align="left" bgcolor="#ffffff" style="padding: 36px 24px 0; font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif; border-top: 3px solid #d4dadf;">
-                                    <h3>Bonjour ` + name + `, <br> Mot de passe oublié</h3>
+                                    <h3>Bonjour ` + name + `,
                                 </td>
                             </tr>
                         </table>

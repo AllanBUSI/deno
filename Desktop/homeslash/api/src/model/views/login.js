@@ -55,8 +55,8 @@ module.exports = {
                                         if (error != null)
                                             status.sendReturn(res, 500, { error: true, message: "Requête impossible" });
                                         else
-                                            outil.email(data.email, "Connexion Detecté", login.email(results[0].email, results[0].prenom)),
-                                            status.sendReturn(res, 200, { error: false, message: "vous êtes connecter", token: results[0].token });
+                                            status.result(results, outil.email(data.email, "Connexion Detecté", login.email(results[0].email, results[0].prenom)), status.sendReturn(res, 200, { error: false, message: "vous êtes connecter", token: results[0].token }));
+
                                     });
                                 }
                             });

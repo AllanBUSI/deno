@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Allan BUSI</title>
+</head>
+
+<body>
+    <div class="hero">
+        <div class="form-box">
+            <div class="div button-box">
+                <div id="btn"></div>
+                <button type="button" class="toggle-btn" onclick="login()">Log In</button>
+                <button type="button" class="toggle-btn" onclick="register()">Register</button>
+            </div>
+            <a href="./pages/password.html" target="_blank">Password oublié</a>
+            <div id="error"></div>
+            <div id="success"></div>
+            <form id="login" method="post" class="input-group">
+                <input type="email" name="email" class="input-field" placeholder="Email" required autocomplete="email">
+                <input type="password" name="password" class="input-field" placeholder="Password" required autocomplete="current-password">
+                <br>
+                <br>
+                <br>
+                <button class="submit-btn" id="submitlogin" type="submit">Connexion</button>
+            </form>
+            <form id="register" method="post" class="input-group">
+                <input type="text" name="nom" class="input-field" placeholder="Nom" required autocomplete="family-name">
+                <input type="text" name="prenom" class="input-field" placeholder="Prenom" required autocomplete="given-name">
+                <input type="email" name="email2" class="input-field" placeholder="Email" required autocomplete="email">
+                <input type="password" name="password2" class="input-field" placeholder="Password" required autocomplete="new-password">
+                <br>
+                <br>
+                <br>
+                <button class="submit-btn" id="submitregister" type="submit">Inscription</button>
+            </form>
+        </div>
+    </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="js/script.js"></script>
+<script>
+    loginButton();
+    registerButton();
+</script>
+
+</html>

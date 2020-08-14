@@ -1,5 +1,4 @@
 const mysql = require("mysql"),
-    logger = require("../logger"),
     mongoose = require("mongoose"),
     config = require("../../config");
 
@@ -20,7 +19,7 @@ const connectionMysql = mysql.createConnection({
 
 connectionMysql.connect((err) => {
     if (err)
-        logger.error(`Error while attempting to connect to database MySQL: ${JSON.stringify(err)}`);
+        console.log(`Error while attempting to connect to database MySQL: ${JSON.stringify(err)}`);
     else
         console.log("connected as id " + connectionMysql.threadId);
 });
@@ -28,7 +27,7 @@ connectionMysql.connect((err) => {
 // Check connection sucess
 connectionMongo
     .then(db => {
-        logger.info(
+        console.log(
             `Successfully connected to ${config.database.mongodb.url} MongoDB cluster in ${
 				config.server.env
 			} mode.`,
@@ -37,13 +36,14 @@ connectionMongo
     })
     .catch(err => {
         if (err.message.code === "ETIMEDOUT") {
-            logger.info("Attempting to re-establish database connection.");
+            console.log("Attempting to re-establish database connection.");
             mongoose.connect(config.database.mongodb.url, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
             });
         } else
-            logger.error(`Error while attempting to connect to database MongoDB: ${JSON.stringify(err)}`);
+            console.log("ok");
+        console.log(`Error while attempting to connect to database MongoDB: ${JSON.stringify(err)}`);
     });
 
 module.exports = {

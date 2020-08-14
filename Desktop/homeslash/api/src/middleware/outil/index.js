@@ -6,9 +6,9 @@ const filter = require("../filter/index"),
 
 
 module.exports = {
-    email: (email, sujet, html) => {
+    email: async(email, sujet, html) => {
         console.log(config.email);
-            // create reusable transporter object using the default SMTP transport
+        // create reusable transporter object using the default SMTP transport
         let transporter = nodemailer.createTransport({
             host: config.email.host,
             port: config.email.port,
@@ -20,6 +20,7 @@ module.exports = {
         });
 
         // send mail with defined transport object
+        console.log(email);
         transporter.sendMail({
             from: config.email.auth.user, // sender address
             to: email, // list of receivers

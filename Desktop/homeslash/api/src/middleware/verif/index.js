@@ -12,8 +12,9 @@ module.exports = {
     emailExiste: async(table, data, res) => {
         let toReturn = false;
         toReturn = await new Promise(resolve => {
-            sql.query(sql.select(table, "email"), data, (error, results) => {
-                resolve((res.length > 0) ? true : false);
+            sql.query(sql.select(table), data, (error, results) => {
+                console.log(results.length);
+                resolve((results.length > 0) ? true : false);
             });
         });
         return toReturn;

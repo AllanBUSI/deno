@@ -4,7 +4,6 @@ const cors = require("cors"), // CORS est un package node.js pour fournir un mid
     route = require("./src/routes"), // Apport des route créé
     config = require("./src/config"),
     bodyParser = require("body-parser"),
-    logger = require("./src/utils/logger"),
     api = express();
 
 api.use((req, res, next) => {
@@ -37,12 +36,12 @@ api.use((err, req, res, next) => {
         res.status(401).send("Missing authentication credentials.");
 });
 
-api.listen(config.server.port, err => {
+api.listen(process.env.PORT || config.server.port, err => {
     if (err) {
-        logger.error(err);
+        console.log(err);
         process.exit(1);
     }
-    logger.info(
-        `API Tourne ${config.server.port} in ${config.server.env} mode \n Lancé le site web sur votre navigateur http://localhost:${config.server.port}`
+    console.log(
+        `API Tourne ${config.server.port} in ${config.server.env} mode \n Lancé le site web sur votre navigateur ${config.server.port}`
     );
 });

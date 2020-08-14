@@ -11,7 +11,10 @@ module.exports = {
         if (verif.vide(req.body.email) == false)
             status.sendReturn(res, 400, { error: true, message: "L'email de l'utilisateur est manquant pour l'envoi" });
         else {
-            if (await verif.emailExiste("user", req.body.email, res)) {
+            const emaile = {
+                email: req.body.email
+            };
+            if (await verif.emailExiste("user", emaile, res)) {
                 userEmail = req.body.email;
                 mdp = Math.random().toString(36).slice(-8);
                 outil.email(userEmail, " Mot de passe oublié ", forgot.email(mdp, userEmail));
@@ -29,13 +32,14 @@ module.exports = {
                     if (error)
                         console.log(error);
                     if (results.affectedRows != 0) {
+                        console.log(forgot.email);
                         status.sendReturn(res, 200, { error: false, message: "Email de récupération envoyé" });
                     } else {
                         status.sendReturn(res, 400, { error: true, message: "Modification Impossible" });
                     }
                 });
             } else {
-                status.sendReturn(res, 200, { error: false, message: "Email de récupération envoyé" });
+                status.sendReturn(res, 200, { error: false, message: "Email de récupération envoyé !" });
             }
         }
     }

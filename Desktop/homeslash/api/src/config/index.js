@@ -1,14 +1,14 @@
 module.exports = {
     server: {
-        port: 8892,
+        port: 3000,
         env: process.env.NODE_ENV || "development",
     },
     database: {
         mysql: {
-            host: "bi70clphib8gkcphtlzx-mysql.services.clever-cloud.com",
-            user: "umfjds0krupyucta",
-            password: "IJdfXW7mCoyE8mUVLnuo",
-            database: "bi70clphib8gkcphtlzx",
+            host: "b68wkt0iwonqsueyq954-mysql.services.clever-cloud.com",
+            user: "ug7ngj7nasxbgw1u",
+            password: "QjBVd4TpnhjP0REJmA7e",
+            database: "b68wkt0iwonqsueyq954",
         },
         mongodb: {
             url: "",
