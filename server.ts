@@ -4,7 +4,7 @@ import {
   isHttpError,
 } from "https://deno.land/x/oak/mod.ts";
 import { config } from "./config/config.ts";
-import router from "./routes/index.ts";
+import route from "./routes/index.ts";
 
 const app = new Application();
 
@@ -42,8 +42,8 @@ app.use(async (ctx: Context, next) => {
   }
 });
 
-app.use(router.routes());
-app.use(router.allowedMethods());
+app.use(route.routes());
+app.use(route.allowedMethods());
 
 // cron
 // import "./cron/subscribe.ts";
