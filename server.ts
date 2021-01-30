@@ -1,14 +1,9 @@
-import {
-  Application,
-  Context,
-  isHttpError,
-} from "https://deno.land/x/oak/mod.ts";
+import { Application,Context,isHttpError } from "https://deno.land/x/oak/mod.ts";
 import { config } from "./config/config.ts";
 import route from "./routes/index.ts";
 
 const app = new Application();
 
-// port
 const PORT = parseInt(config.PORT) | 3000;
 
 app.addEventListener("listen", ({ hostname, port, secure }) => {
@@ -18,7 +13,6 @@ app.addEventListener("listen", ({ hostname, port, secure }) => {
   );
 });
 
-// middleware
 app.use(async (ctx: Context, next) => {
   try {
     await next();
@@ -43,6 +37,7 @@ app.use(async (ctx: Context, next) => {
 });
 
 app.use(route.routes());
+
 app.use(route.allowedMethods());
 
 // cron
