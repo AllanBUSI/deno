@@ -1,6 +1,7 @@
 // deno-lint-ignore-file
 import { config } from "../config/config.ts";
-export const stripeRequest = async (
+export class stripe{
+ stripeRequest = async (
   email: string,
   cardNumber: string,
   expMonth: string,
@@ -73,4 +74,4 @@ export const stripeRequest = async (
     requestOptions,
   );
   return await subcription.json();
-};
+}}

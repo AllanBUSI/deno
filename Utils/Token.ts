@@ -13,7 +13,10 @@ import {
   import UserInterfaces from "../interfaces/userInterfaces.ts";
   import { IToken } from "../interfaces/tokenInterface.ts";
   
-  export const createToken = async (user: UserInterfaces) => {
+
+
+export class token {
+   createToken = async (user: UserInterfaces) => {
     return await create(
       { alg: String(config.JWT_ALGO) as Algorithm, typ: "JWT" },
       {
@@ -67,5 +70,6 @@ import {
       // sinon on retourne false
       return false;
     }
-  };
+  }
+  }
   
