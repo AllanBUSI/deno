@@ -9,14 +9,13 @@ import {
     AlgorithmInput,
   } from "https://deno.land/x/djwt@v2.0/algorithm.ts";
   import { config } from "../config/config.ts";
-  import { roleTypes } from "../types/rolesTypes.ts";
-  import UserInterfaces from "../interfaces/userInterfaces.ts";
-  import { IToken } from "../interfaces/tokenInterface.ts";
+  import { roleTypes } from "../type/index.ts";
+  import UserInterfaces from "../interfaces/UserInterfaces.ts";
+  import { IToken } from "../interfaces/UserInterfaces.ts";
   
 
 
-export class token {
-   createToken = async (user: UserInterfaces) => {
+  export const  createToken = async (user: UserInterfaces) => {
     return await create(
       { alg: String(config.JWT_ALGO) as Algorithm, typ: "JWT" },
       {
@@ -70,6 +69,5 @@ export class token {
       // sinon on retourne false
       return false;
     }
-  }
   }
   

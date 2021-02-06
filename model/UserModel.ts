@@ -1,9 +1,7 @@
 import UserDB from "../db/UserDB.ts";
-import { hash } from "../helpers/password.helper.ts";
-import UserInterfaces from "../interfaces/userInterfaces.ts";
-import { roleTypes } from "../types/rolesTypes.ts";
-import { sexeTypes } from "../types/sexeTypes.ts";
-import { UserTypes } from "../types/userTypes.ts";
+import { hash } from "../helper/index.ts";
+import UserInterfaces from "../interfaces/UserInterfaces.ts";
+import { UserTypes,sexeTypes,roleTypes } from "../type/index.ts";
 
 export class UserModels extends UserDB implements UserInterfaces {
   private _role: roleTypes = "Admin";

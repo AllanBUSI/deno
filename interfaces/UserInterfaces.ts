@@ -1,6 +1,6 @@
 import { roleTypes, sexeTypes, BillType, ChildTypes, UserTypes } from "../type/index.ts";
 
-export interface UserInterfaces {
+export default interface UserInterfaces {
     _id: { $oid: string } | null | string;
   
     firstname: string;
@@ -67,6 +67,8 @@ export interface BillInterface {
 export interface IToken {
     sub: string | undefined;
     email: string;
+    firstname: string,
+    lastname: string,
     role: roleTypes;
     exp: number | undefined;
 }
