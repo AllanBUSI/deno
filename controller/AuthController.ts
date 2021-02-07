@@ -16,23 +16,25 @@ export default class AuthController {
        * REGISTER
        */
     async register({ request, response }: Context) {
-        var resUser: UserModels;
-        var user: UserModels;
-        resUser = await request.body().value;
-        if (
-          !resUser.firstname ||
-          !resUser.lastname ||
-          !resUser.email ||
-          !resUser.dateNaissance ||
-          !resUser.sexe
-        ) {
+        // Appal le body 
+        const data: any = await request.body()
+        // verifi le body 
+        let user:any = {};
+        // recupere les data dans le body 
+        for (const [key, value] of await data.value) {
+          user[key] = value;
+        }
+        console.log(user)
+        if (!user.firstname || !user.lastname || !user.email || !user.dateNaissance || !user.sexe) 
+        {
           response.status = 400;
           response.body = {
             "error": false,
             "message": "Une ou plusieurs données obligatoire sont manquantes",
           };
         }
-        if (
+        
+        /*if (
           resUser.sexe != "Homme" &&
           resUser.sexe != "Femme" &&
           emailValidation(resUser.email) &&
@@ -43,23 +45,14 @@ export default class AuthController {
             "error": false,
             "message": "Une ou plusieurs données sont erronées",
           };
-        } else {
+        }*/ 
+        else {
           response.status = 201;
           response.body = {
             "error": false,
             "message": "L'utilisateur a bien été créé avec succès",
-            "user": {
-              "firstname": "xxxxxx",
-              "lastname": "xxxxxx",
-              "email": "xxxxxx",
-              "sexe": "xxxxxx",
-              "role": "xxxxx",
-              "dateNaissance": "xxxx-xx-xx",
-              "createdAt": "xxxxxx",
-              "updateAt": "xxxxxx",
-              "subscription": 0,
-            },
-          };
+            "user": user,
+          };/*
           user = new UserModels(
             resUser.firstname,
             resUser.lastname,
@@ -70,10 +63,10 @@ export default class AuthController {
           );
           user.insert();
           console.log("insert done");
-        }
+        }*/
         // A finir le code erreur pour le email doesn't exist
       };
-      
+    } 
 
     async login({ request, response }: Context)  {
         response.status = 400;

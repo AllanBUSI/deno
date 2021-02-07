@@ -1,17 +1,16 @@
 // deno-lint-ignore-file
-import  UserInterfaces  from "../interfaces/UserInterfaces.ts";
+import  UserInterfaces   from "../interfaces/UserInterfaces.ts";
+import BillInterface from "../interfaces/BillInterface.ts";
+import  ChildInterface from '../interfaces/ChildInterface.ts';
 import { db } from "./index.ts";
 import { UserTypes } from "../type/index.ts";
-import  ChildInterface  from "../interfaces/UserInterfaces.ts";
-import { Bson } from "https://deno.land/x/bson/mod.ts";
-import  BillInterface  from "../interfaces/UserInterfaces.ts";
 
 export default class UserDB {
   protected userdb;
-  protected childdb;
+  //protected childdb;
   constructor() {
     this.userdb = db.collection<UserInterfaces>("users");
-    this.childdb = db.collection<ChildInterface>("childs");
+    //this.childdb = db.collection<ChildInterface>("childs");
   }
 
   async findByEmail(email: string): Promise<UserInterfaces | undefined> {
