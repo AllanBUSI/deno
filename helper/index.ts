@@ -17,9 +17,17 @@ moment().locale("fr");
     return /\S+@\S+\.\S+/.test(email) && email.length >= 10 &&
         email.length <= 150;
     };
-
-    export const dateNaissanceValidation = (dateNaissance: Date) => {
+    
+   /* export const dateNaissanceValidation = (dateNaissance: Date) => {
     return dateNaissance.getTime() >= Date.now();
+    };*/
+
+    export const dateNaissanceValidation = (data : string) => {
+        let regexDate = /^([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))$/;
+        if (data.match(regexDate) == null)
+            return false;
+        else
+            return true;
     };
 
     export const dateValidation = (date: string) => {

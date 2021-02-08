@@ -24,7 +24,7 @@ export default class AuthController {
         for (const [key, value] of await data.value) {
           user[key] = value;
         }
-        console.log(user)
+        //console.log(user)
         if (!user.firstname || !user.lastname || !user.email || !user.dateNaissance || !user.sexe) 
         {
           response.status = 400;
@@ -32,41 +32,33 @@ export default class AuthController {
             "error": false,
             "message": "Une ou plusieurs données obligatoire sont manquantes",
           };
-        }
-        
-        /*if (
-          resUser.sexe != "Homme" &&
-          resUser.sexe != "Femme" &&
-          emailValidation(resUser.email) &&
-          dateNaissanceValidation(resUser.dateNaissance)
-        ) {
-          response.status = 409;
-          response.body = {
-            "error": false,
-            "message": "Une ou plusieurs données sont erronées",
-          };
-        }*/ 
-        else {
+        }else if ( user.sexe != "Homme" || user.sexe != "Femme" && emailValidation(user.email) && dateNaissanceValidation(user.dateNaissance))
+        {
+            console.log("verifier bien")
+            response.status = 409;
+            response.body = {
+                "error": false,
+                "message": "Une ou plusieurs données sont erronées",
+            };
+        }else {
           response.status = 201;
           response.body = {
             "error": false,
             "message": "L'utilisateur a bien été créé avec succès",
             "user": user,
-          };/*
-          user = new UserModels(
-            resUser.firstname,
-            resUser.lastname,
-            resUser.email,
-            resUser.sexe,
-            resUser.password,
-            resUser.dateNaissance,
+          };
+         const client = new UserModels(
+            user.firstname,
+            user.lastname,
+            user.email,
+            user.sexe,
+            user.password,
+            user.dateNaissance,
           );
-          user.insert();
-          console.log("insert done");
-        }*/
+          await client.insert();
+        }
         // A finir le code erreur pour le email doesn't exist
       };
-    } 
 
     async login({ request, response }: Context)  {
         response.status = 400;
