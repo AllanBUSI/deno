@@ -8,8 +8,15 @@ import {
   import UserDB from "../db/UserDB.ts";
   import { createToken } from "../utils/token.ts";
 
-export default class AuthController {
+  
+import { db } from '../db/index.ts';
+import UserInterfaces from '../interfaces/UserInterfaces.ts';
 
+    //base de données
+    const userdb =  db.collection < UserInterfaces > ("users");
+
+
+export default class AuthController {
 
       
       /**
@@ -32,7 +39,7 @@ export default class AuthController {
             "error": false,
             "message": "Une ou plusieurs données obligatoire sont manquantes",
           };
-        }else if ( user.sexe != "Homme" || user.sexe != "Femme" && emailValidation(user.email) && dateNaissanceValidation(user.dateNaissance))
+        }else if( user.sexe != "Homme" || user.sexe != "Femme" && emailValidation(user.email) && dateNaissanceValidation(user.dateNaissance))
         {
             console.log("verifier bien")
             response.status = 409;
@@ -41,21 +48,31 @@ export default class AuthController {
                 "message": "Une ou plusieurs données sont erronées",
             };
         }else {
-          response.status = 201;
-          response.body = {
-            "error": false,
-            "message": "L'utilisateur a bien été créé avec succès",
-            "user": user,
-          };
-         const client = new UserModels(
-            user.firstname,
-            user.lastname,
-            user.email,
-            user.sexe,
-            user.password,
-            user.dateNaissance,
-          );
-          await client.insert();
+        //console.log(user)
+            const us = await userdb.findOne({ email: user.email });
+            if(!us){
+                const client = new UserModels(
+                    user.firstname,
+                    user.lastname,
+                    user.email,
+                    user.sexe,
+                    user.password,
+                    user.dateNaissance,
+                );
+                await client.insert();
+                response.status = 201;
+                response.body = {
+                "error": false,
+                "message": "L'utilisateur a bien été créé avec succès",
+                "user": user,
+                };
+            }else{
+                response.status = 409;
+                response.body = {
+                "error": true,
+                "message": "Un compte utilisant cette adresse mail est déjà enregistré",
+                };
+            }
         }
         // A finir le code erreur pour le email doesn't exist
       };

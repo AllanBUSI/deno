@@ -11,9 +11,9 @@ export class UserModels extends UserDB implements UserInterfaces {
   lastname: string;
   email: string;
   sexe: sexeTypes;
-  role: roleTypes;
   password: string;
   dateNaissance: Date;
+  role: roleTypes;
   createdAt: Date;
   updateAt: Date;
   subscription: number;
@@ -36,9 +36,9 @@ export class UserModels extends UserDB implements UserInterfaces {
     this.lastname = nom;
     this.email = email;
     this.sexe = sexe;
-    this.role = "Tuteur";
     this.password = password;
     this.dateNaissance = new Date(dateNaissance);
+    this.role = "Tuteur";
     this.createdAt = new Date();
     this.updateAt = new Date();
     this.subscription = 0;
