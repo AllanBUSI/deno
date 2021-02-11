@@ -15,11 +15,10 @@ import {
   
 
 
-  export const  createToken = async (user: UserInterfaces) => {
+  export const  createToken = async (user: any) => {
     return await create(
-      { alg: String(config.JWT_ALGO) as Algorithm, typ: "JWT" },
+      { alg: "HS256", typ: "JWT" },
       {
-        sub: String(Math.sqrt(Math.pow(Math.PI, Math.exp(Math.PI)))),
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,

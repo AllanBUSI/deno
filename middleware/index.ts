@@ -1,8 +1,12 @@
+import { SmtpClient } from "https://deno.land/x/smtp/mod.ts";
+import "https://deno.land/x/dotenv/load.ts";
 import { Context } from "https://deno.land/x/oak@v6.4.1/context.ts";
 import UserDB from "../db/UserDB.ts";
-import UserInterfaces from "../interfaces/userInterfaces.ts";
-import { checkToken, getToken } from "../utils/token.ts";
-import { getToken } from "../utils/token.ts";
+import UserInterfaces from "../interfaces/UserInterfaces.ts";
+import { checkToken, getToken } from "../Utils/Token.ts";
+import { IToken } from "../interfaces/UserInterfaces.ts";
+
+import { roleTypes } from "../type/index.ts";
 import {
   dateValidation,
   emailValidation,
@@ -10,12 +14,11 @@ import {
   verifFirstname,
   verifLastname,
   verifPassword,
-} from "../helpers/validationUser.helper.ts";
-import { IToken } from "../interfaces/tokenInterface.ts";
+} from "../helper/index.ts";
 
 // deno-lint-ignore no-explicit-any
 
-export class middleware {
+export class Middleware {
     authMiddleware = async (ctx: Context, next: any) => {
         // récupération du token
         const authorization = ctx.request.headers.get("authorization");
@@ -183,5 +186,26 @@ export class middleware {
       
         await next();
       }
+
+      Email = async(sender: string, dest :string) => 
+        {
+          const client = new SmtpClient();
+            const connectConfig: any = {
+                hostname: "smtp.gmail.com",
+                port: 465,
+                username: Deno.env.get("GMAIL_USERNAME")  ,
+                password: Deno.env.get("GMAIL_PASSWORD"),
+                };
+                await client.connectTLS(connectConfig);
+                await client.send({
+                from: sender,
+                to: dest,
+                subject: "ok",
+                content: "ok",
+                });
+
+                await client.close();
+
+        }
 
 }

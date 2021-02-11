@@ -1,19 +1,23 @@
+import { Middleware } from '../middleware/index.ts';
 import { Context } from "https://deno.land/x/oak@v6.4.1/context.ts";    
 import {
     dateNaissanceValidation,
     emailValidation,
     formatDateNaissance,
+    comparePass,
   } from "../helper/index.ts";
-  import { UserModels } from "../model/UserModel.ts";
-  import UserDB from "../db/UserDB.ts";
-  import { createToken } from "../utils/token.ts";
+import { UserModels } from "../model/UserModel.ts";
+import UserDB from "../db/UserDB.ts";
+import { createToken } from "../Utils/Token.ts";
+
 
   
 import { db } from '../db/index.ts';
 import UserInterfaces from '../interfaces/UserInterfaces.ts';
 
-    //base de données
-    const userdb =  db.collection < UserInterfaces > ("users");
+//base de données
+const userdb =  db.collection < UserInterfaces > ("users");
+const sendMail = new Middleware();
 
 
 export default class AuthController {
@@ -66,6 +70,7 @@ export default class AuthController {
                 "message": "L'utilisateur a bien été créé avec succès",
                 "user": user,
                 };
+                await sendMail.Email("busi.travail@gmail.com",user.email);
             }else{
                 response.status = 409;
                 response.body = {
@@ -78,8 +83,67 @@ export default class AuthController {
       };
 
     async login({ request, response }: Context)  {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+         // Appal le body 
+         const data: any = await request.body()
+         // verifi le body 
+         let user:any = {};
+         // recupere les data dans le body 
+         for (const [key, value] of await data.value) {
+           user[key] = value;
+         }
+           if(user.email && user.password){
+              const us = await userdb.findOne({email: user.email});
+              if(us){
+                var pass = us.password;
+                //console.log(comparePass(user.password, pass));
+    
+                if(await comparePass(user.password, pass)){
+                    //const token = jwt.getAuthToken(us);
+                    const token = await createToken(us);
+                    response.status = 200;
+                    response.body = {
+                      "error": false, 
+                      "message": "L'utilisateur a été authentifié avec succès",
+                      "user": us,
+                      "token": token
+                    };
+                  }else {
+                    response.status = 400;
+                    response.body = {
+                      "error": true, 
+                      "message": "Email/password incorrect",
+                    };
+                }
+              }
+           }else{
+            response.status = 400;
+            response.body = {
+              "error": true, 
+              "message": "Email/password manquants"
+            };
+           }
     }
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
