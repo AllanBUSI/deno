@@ -29,13 +29,13 @@ import {
     );
   };
   
-  export const checkToken = async (token: string) => {
+  export const verifyToken = async (token: string) => {
     try {
-      // si le token est valide on retourne true
+      // si le token est correct on retourne true
       await verify(
         token.split("Bearer ")[1],
         config.JWT_TOKEN_SECRET,
-        String(config.JWT_ALGO) as AlgorithmInput,
+        "HS256",
       );
       return true;
     } catch (error) {

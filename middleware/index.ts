@@ -3,7 +3,7 @@ import "https://deno.land/x/dotenv/load.ts";
 import { Context } from "https://deno.land/x/oak@v6.4.1/context.ts";
 import UserDB from "../db/UserDB.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
-import { checkToken, getToken } from "../Utils/Token.ts";
+import { verifyToken, getToken } from "../Utils/Token.ts";
 import { IToken } from "../interfaces/UserInterfaces.ts";
 
 import { roleTypes } from "../type/index.ts";
@@ -19,38 +19,27 @@ import {
 // deno-lint-ignore no-explicit-any
 
 export class Middleware {
-    authMiddleware = async (ctx: Context, next: any) => {
+    userMiddleware = async (context: Context, next: any) => {
         // récupération du token
-        const authorization = ctx.request.headers.get("authorization");
+        const authorization = context.request.headers.get("authorization");
       
         // s'il n'y a pas de header authorization dans la requête
         if (!authorization) {
-          ctx.response.status = 401;
-          return await ctx.response.toServerResponse();
+          context.response.status = 401;
+          return await context.response.toServerResponse();
         }
       
         // vérification du token
-        const token = await checkToken(authorization);
-        const tokenModels = await getToken(authorization);
-        let isTokenValid: boolean;
-        if (!tokenModels) {
-          isTokenValid = false;
-        } else {
-          const user: UserInterfaces | undefined = await new UserDB().findByEmail(
-            tokenModels.email,
-          );
-          if (user) {
-            isTokenValid = user.token == authorization.split("Bearer ")[1];
-          } else {
-            isTokenValid = false;
-          }
+        const token = await verifyToken(authorization);
+        if (!token) {
+          context.response.status = 401;
+          context.response.body = {
+            "error": true,
+            "message": "Votre token n'est pas correct",
+          };
+        }else{
+          return await next();
         }
-        // si le token est présent mais qu'il n'est pas valide ou si le token est présent mais le user est logout
-        if (!token || !isTokenValid) {
-          ctx.response.status = 403;
-          return await ctx.response.toServerResponse();
-        }
-        return await next();
       }
 
       addChildMiddleware = async (
