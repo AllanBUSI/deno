@@ -1,9 +1,8 @@
 import UserDB from "../db/UserDB.ts";
-import { hash } from "../helpers/password.helper.ts";
-import UserInterfaces from "../interfaces/userInterfaces.ts";
-import { roleTypes } from "../types/rolesTypes.ts";
-import { sexeTypes } from "../types/sexeTypes.ts";
-import { UserTypes } from "../types/userTypes.ts";
+import { hash } from "../helper/index.ts";
+import UserInterfaces from "../interfaces/UserInterfaces.ts";
+import { UserTypes,sexeTypes,roleTypes } from "../type/index.ts";
+import  ChildInterface  from '../interfaces/ChildInterface.ts';
 
 export class UserModels extends UserDB implements UserInterfaces {
   private _role: roleTypes = "Admin";
@@ -13,9 +12,9 @@ export class UserModels extends UserDB implements UserInterfaces {
   lastname: string;
   email: string;
   sexe: sexeTypes;
-  role: roleTypes;
   password: string;
   dateNaissance: Date;
+  role: roleTypes;
   createdAt: Date;
   updateAt: Date;
   subscription: number;
@@ -24,6 +23,7 @@ export class UserModels extends UserDB implements UserInterfaces {
   subscribeCreatedAt?: Date | null;
   subscribeUpdateAt?: Date | null;
   token?: string;
+  childs?: ChildInterface[];
 
   constructor(
     prenom: string,
@@ -38,13 +38,14 @@ export class UserModels extends UserDB implements UserInterfaces {
     this.lastname = nom;
     this.email = email;
     this.sexe = sexe;
-    this.role = "Tuteur";
     this.password = password;
     this.dateNaissance = new Date(dateNaissance);
+    this.role = "Tuteur";
     this.createdAt = new Date();
     this.updateAt = new Date();
     this.subscription = 0;
     this.token = "";
+    this.childs = [];
   }
 
   get _id(): string | null {
@@ -80,7 +81,7 @@ export class UserModels extends UserDB implements UserInterfaces {
       createdAt: this.createdAt,
       updateAt: this.updateAt,
       subscription: this.subscription,
-      token: this.token,
+      childs:this.childs,
     }) as {
       $oid: string;
     };

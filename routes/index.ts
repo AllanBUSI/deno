@@ -1,3 +1,4 @@
+import { Middleware } from '../middleware/index.ts';
 import { Router } from "https://deno.land/x/oak/mod.ts";
 import  UserController  from "../controller/UserController.ts";
 import  AudioController  from "../controller/AudioController.ts";
@@ -9,6 +10,7 @@ const user = new UserController();
 const audio = new AudioController();
 const auth = new AuthController();
 const autre = new AutreController();
+const userM = new Middleware();
 
 // général
 route.get('/', user.home);
@@ -16,12 +18,12 @@ route.get('/', user.home);
 route.post('/register', auth.register);
 route.post('/login', auth.login);
 // user
-route.put('/user', user.userPut);
+route.put('/user',userM.userMiddleware, user.userUpDate);
+route.delete('/user',userM.userMiddleware,user.userDelete);
 route.delete('/user/off',user.userOff);
 route.put('/cart', user.userCart);
-route.delete('/user',user.userDelete);
 // child
-route.post('/user/child',user.userChildCreate);
+route.post('/user/child',userM.userMiddleware,user.userAddChild);
 route.delete('/user/child',user.userChildDelete);
 route.get('/user/child',user.userChildAll);
 // songs

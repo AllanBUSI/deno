@@ -1,7 +1,7 @@
 // deno-lint-ignore-file
-import { db } from "./db.ts";
-import { UserTypes } from "../types/userTypes.ts";
-import ChildInterface from "../interfaces/ChildInterfaces.ts";
+import { db } from "./index.ts";
+import { UserTypes } from "../type/index.ts";
+import ChildInterface from "../interfaces/ChildInterface.ts";
 
 export class ChildDB {
   protected childdb: any;

@@ -2,6 +2,8 @@ import { config } from "../config/config.ts";
 import { MongoClient} from "https://deno.land/x/mongo@v0.20.1/mod.ts";
 
 const client = new MongoClient();
-await client.connect(config.DB_URL);
+await client.connect({
+    servers: [{ host: config.DB_URL , port: 27017 }],
+  });
 
-export const db = client.database("denoProject");
+export const db = client.database("Cluster0");

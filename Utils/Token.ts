@@ -9,18 +9,17 @@ import {
     AlgorithmInput,
   } from "https://deno.land/x/djwt@v2.0/algorithm.ts";
   import { config } from "../config/config.ts";
-  import { roleTypes } from "../types/rolesTypes.ts";
-  import UserInterfaces from "../interfaces/userInterfaces.ts";
-  import { IToken } from "../interfaces/tokenInterface.ts";
+  import { roleTypes } from "../type/index.ts";
+  import UserInterfaces from "../interfaces/UserInterfaces.ts";
+  import { IToken } from "../interfaces/UserInterfaces.ts";
+  import { decode } from "https://deno.land/x/djwt@v2.0/mod.ts"
   
 
 
-export class token {
-   createToken = async (user: UserInterfaces) => {
+  export const  createToken = async (user: any) => {
     return await create(
-      { alg: String(config.JWT_ALGO) as Algorithm, typ: "JWT" },
+      { alg: "HS256", typ: "JWT" },
       {
-        sub: String(Math.sqrt(Math.pow(Math.PI, Math.exp(Math.PI)))),
         email: user.email,
         firstname: user.firstname,
         lastname: user.lastname,
@@ -31,13 +30,13 @@ export class token {
     );
   };
   
-  export const checkToken = async (token: string) => {
+  export const verifyToken = async (token: string) => {
     try {
-      // si le token est valide on retourne true
+      // si le token est correct on retourne true
       await verify(
         token.split("Bearer ")[1],
         config.JWT_TOKEN_SECRET,
-        String(config.JWT_ALGO) as AlgorithmInput,
+        "HS256",
       );
       return true;
     } catch (error) {
@@ -46,19 +45,16 @@ export class token {
     }
   };
   
-  export const getToken = async (
-    token: string,
-  ): Promise<
-    false | IToken
-  > => {
-    try {
+  export const getToken = async (token: any): Promise<any> => {
       // si le token est valide on le retourne
+      //console.log(token)
       const payload = await verify(
         token.split("Bearer ")[1],
         config.JWT_TOKEN_SECRET,
-        String(config.JWT_ALGO) as AlgorithmInput,
+        "HS256",
       );
-      return {
+      //console.log(token);
+      return token = {
         sub: payload.sub,
         email: payload.email as string,
         firstname: payload.firstname as string,
@@ -66,10 +62,11 @@ export class token {
         role: payload.role as roleTypes,
         exp: payload.exp,
       };
-    } catch (error) {
-      // sinon on retourne false
-      return false;
-    }
   }
+
+  export const decodeToken = async(jwt: any)=>{
+    const token = {}
+   // token = {payload, signature, header} = decode(jwt.split("Bearer ")[1])
+   // console.log(token.payload)
   }
   

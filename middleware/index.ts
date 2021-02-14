@@ -1,8 +1,12 @@
+import { SmtpClient } from "https://deno.land/x/smtp/mod.ts";
+import "https://deno.land/x/dotenv/load.ts";
 import { Context } from "https://deno.land/x/oak@v6.4.1/context.ts";
 import UserDB from "../db/UserDB.ts";
-import UserInterfaces from "../interfaces/userInterfaces.ts";
-import { checkToken, getToken } from "../utils/token.ts";
-import { getToken } from "../utils/token.ts";
+import UserInterfaces from "../interfaces/UserInterfaces.ts";
+import { verifyToken, getToken } from "../Utils/Token.ts";
+import { IToken } from "../interfaces/UserInterfaces.ts";
+
+import { roleTypes } from "../type/index.ts";
 import {
   dateValidation,
   emailValidation,
@@ -10,44 +14,32 @@ import {
   verifFirstname,
   verifLastname,
   verifPassword,
-} from "../helpers/validationUser.helper.ts";
-import { IToken } from "../interfaces/tokenInterface.ts";
+} from "../helper/index.ts";
 
 // deno-lint-ignore no-explicit-any
 
-export class middleware {
-    authMiddleware = async (ctx: Context, next: any) => {
+export class Middleware {
+    userMiddleware = async (context: Context, next: any) => {
         // récupération du token
-        const authorization = ctx.request.headers.get("authorization");
+        const authorization = context.request.headers.get("authorization");
       
         // s'il n'y a pas de header authorization dans la requête
         if (!authorization) {
-          ctx.response.status = 401;
-          return await ctx.response.toServerResponse();
+          context.response.status = 401;
+          return await context.response.toServerResponse();
         }
       
         // vérification du token
-        const token = await checkToken(authorization);
-        const tokenModels = await getToken(authorization);
-        let isTokenValid: boolean;
-        if (!tokenModels) {
-          isTokenValid = false;
-        } else {
-          const user: UserInterfaces | undefined = await new UserDB().findByEmail(
-            tokenModels.email,
-          );
-          if (user) {
-            isTokenValid = user.token == authorization.split("Bearer ")[1];
-          } else {
-            isTokenValid = false;
-          }
+        const token = await verifyToken(authorization);
+        if (!token) {
+          context.response.status = 401;
+          context.response.body = {
+            "error": true,
+            "message": "Votre token n'est pas correct",
+          };
+        }else{
+          return await next();
         }
-        // si le token est présent mais qu'il n'est pas valide ou si le token est présent mais le user est logout
-        if (!token || !isTokenValid) {
-          ctx.response.status = 403;
-          return await ctx.response.toServerResponse();
-        }
-        return await next();
       }
 
       addChildMiddleware = async (
@@ -183,5 +175,26 @@ export class middleware {
       
         await next();
       }
+
+      Email = async(sender: string, dest :string) => 
+        {
+          const client = new SmtpClient();
+            const connectConfig: any = {
+                hostname: "smtp.gmail.com",
+                port: 465,
+                username: Deno.env.get("GMAIL_USERNAME")  ,
+                password: Deno.env.get("GMAIL_PASSWORD"),
+                };
+                await client.connectTLS(connectConfig);
+                await client.send({
+                from: sender,
+                to: dest,
+                subject: "ok",
+                content: "ok",
+                });
+
+                await client.close();
+
+        }
 
 }

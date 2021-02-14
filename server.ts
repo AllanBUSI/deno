@@ -4,7 +4,7 @@ import route from "./routes/index.ts";
 
 const app = new Application();
 
-const PORT = parseInt(config.PORT) | 3000;
+const PORT = parseInt(config.PORT) | 3001;
 
 app.addEventListener("listen", ({ hostname, port, secure }) => {
   console.log(
