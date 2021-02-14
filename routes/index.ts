@@ -19,11 +19,11 @@ route.post('/register', auth.register);
 route.post('/login', auth.login);
 // user
 route.put('/user',userM.userMiddleware, user.userUpDate);
+route.delete('/user',userM.userMiddleware,user.userDelete);
 route.delete('/user/off',user.userOff);
 route.put('/cart', user.userCart);
-route.delete('/user',user.userDelete);
 // child
-route.post('/user/child',user.userChildCreate);
+route.post('/user/child',userM.userMiddleware,user.userAddChild);
 route.delete('/user/child',user.userChildDelete);
 route.get('/user/child',user.userChildAll);
 // songs

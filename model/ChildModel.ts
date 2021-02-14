@@ -1,9 +1,7 @@
 import { Document } from "https://deno.land/x/mongo@v0.20.1/src/types.ts";
-import { hash } from "../helpers/password.helper.ts";
-import ChildInterface from "../interfaces/ChildInterfaces.ts";
-import { roleTypes } from "../types/rolesTypes.ts";
-import { sexeTypes } from "../types/sexeTypes.ts";
-import { UserTypes } from "../types/userTypes.ts";
+import { hash } from "../helper/index.ts";
+import ChildInterface from "../interfaces/ChildInterface.ts";
+import { UserTypes,sexeTypes,roleTypes } from "../type/index.ts";
 import { ChildDB } from "../db/ChildDB.ts";
 import { Bson } from "https://deno.land/x/bson/mod.ts";
 
@@ -20,7 +18,6 @@ export class ChildModels extends ChildDB implements ChildInterface {
   dateNaissance: Date;
   createdAt: Date;
   updateAt: Date;
-  subscription: number;
 
   constructor(
     prenom: string,
@@ -29,7 +26,6 @@ export class ChildModels extends ChildDB implements ChildInterface {
     sexe: sexeTypes,
     password: string,
     dateNaissance: Date,
-    subscription: number,
   ) {
     super();
     this.firstname = prenom;
@@ -41,7 +37,6 @@ export class ChildModels extends ChildDB implements ChildInterface {
     this.dateNaissance = new Date(dateNaissance);
     this.createdAt = new Date();
     this.updateAt = new Date();
-    this.subscription = subscription;
   }
 
   get _id(): string | null {
@@ -78,7 +73,6 @@ export class ChildModels extends ChildDB implements ChildInterface {
       dateNaissance: this.dateNaissance,
       createdAt: this.createdAt,
       updateAt: this.updateAt,
-      subscription: this.subscription,
     };
   }
 
@@ -92,5 +86,22 @@ export class ChildModels extends ChildDB implements ChildInterface {
 
   delete(): Promise<void> {
     throw new Error("Method not implemented.");
+  }
+
+  async insert(): Promise<void> {
+    this.password = await hash(this.password);
+    this.id = await this.childdb.insertOne({
+      firstname: this.firstname,
+      lastname: this.lastname,
+      email: this.email,
+      sexe: this.sexe,
+      role: this.role,
+      password: this.password,
+      dateNaissance: this.dateNaissance,
+      createdAt: this.createdAt,
+      updateAt: this.updateAt,
+    }) as {
+      $oid: string;
+    };
   }
 }

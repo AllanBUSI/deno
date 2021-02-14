@@ -13,7 +13,6 @@ export default interface ChildInterface {
     createdAt: Date;
     updateAt: Date;
     token?: string;
-    subscription: number;
   
     getAge(): number;
     fullName(): string;

@@ -2,6 +2,7 @@ import UserDB from "../db/UserDB.ts";
 import { hash } from "../helper/index.ts";
 import UserInterfaces from "../interfaces/UserInterfaces.ts";
 import { UserTypes,sexeTypes,roleTypes } from "../type/index.ts";
+import  ChildInterface  from '../interfaces/ChildInterface.ts';
 
 export class UserModels extends UserDB implements UserInterfaces {
   private _role: roleTypes = "Admin";
@@ -22,6 +23,7 @@ export class UserModels extends UserDB implements UserInterfaces {
   subscribeCreatedAt?: Date | null;
   subscribeUpdateAt?: Date | null;
   token?: string;
+  childs?: ChildInterface[];
 
   constructor(
     prenom: string,
@@ -43,6 +45,7 @@ export class UserModels extends UserDB implements UserInterfaces {
     this.updateAt = new Date();
     this.subscription = 0;
     this.token = "";
+    this.childs = [];
   }
 
   get _id(): string | null {
@@ -78,7 +81,7 @@ export class UserModels extends UserDB implements UserInterfaces {
       createdAt: this.createdAt,
       updateAt: this.updateAt,
       subscription: this.subscription,
-      token: this.token,
+      childs:this.childs,
     }) as {
       $oid: string;
     };

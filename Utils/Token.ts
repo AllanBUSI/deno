@@ -12,6 +12,7 @@ import {
   import { roleTypes } from "../type/index.ts";
   import UserInterfaces from "../interfaces/UserInterfaces.ts";
   import { IToken } from "../interfaces/UserInterfaces.ts";
+  import { decode } from "https://deno.land/x/djwt@v2.0/mod.ts"
   
 
 
@@ -44,19 +45,16 @@ import {
     }
   };
   
-  export const getToken = async (
-    token: string,
-  ): Promise<
-    false | IToken
-  > => {
-    try {
+  export const getToken = async (token: any): Promise<any> => {
       // si le token est valide on le retourne
+      //console.log(token)
       const payload = await verify(
         token.split("Bearer ")[1],
         config.JWT_TOKEN_SECRET,
-        String(config.JWT_ALGO) as AlgorithmInput,
+        "HS256",
       );
-      return {
+      //console.log(token);
+      return token = {
         sub: payload.sub,
         email: payload.email as string,
         firstname: payload.firstname as string,
@@ -64,9 +62,11 @@ import {
         role: payload.role as roleTypes,
         exp: payload.exp,
       };
-    } catch (error) {
-      // sinon on retourne false
-      return false;
-    }
+  }
+
+  export const decodeToken = async(jwt: any)=>{
+    const token = {}
+   // token = {payload, signature, header} = decode(jwt.split("Bearer ")[1])
+   // console.log(token.payload)
   }
   
