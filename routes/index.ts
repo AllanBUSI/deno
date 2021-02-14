@@ -23,9 +23,9 @@ route.delete('/user',userM.userMiddleware,user.userDelete);
 route.delete('/user/off',user.userOff);
 route.put('/cart', user.userCart);
 // child
-route.post('/user/child',userM.userMiddleware,user.userAddChild);
-route.delete('/user/child',user.userChildDelete);
-route.get('/user/child',user.userChildAll);
+route.post('/user/child',userM.userMiddleware,userM.roleMiddleware,user.userAddChild);
+route.delete('/user/child',userM.userMiddleware,userM.roleMiddleware,user.userDeleteChild);
+route.get('/user/child',userM.userMiddleware,userM.roleMiddleware,user.userAllChild);
 // songs
 route.get('/songs', audio.songs);
 route.get('/songs/:id', audio.allsongs);

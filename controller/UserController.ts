@@ -128,20 +128,29 @@ export default class UserController {
                 if(authorization){
                     const token = await getToken(authorization);
                     let user = await new UserDB().findByEmail(token.email);
-                    if(user && user.childs !== undefined){
-                        const mail:any = child.email;
-                        user.childs.push(mail);
-                        console.log(user)
-                        await  userdb.updateOne({email:user.email}, user);
+                    const childA = user?.childs || [];
+                    if(childA.length < 3){
+                        if(user && user.childs !== undefined){
+                            const mail:any = child.email;
+                            user.childs.push(mail);
+                            console.log(user)
+                            await  userdb.updateOne({email:user.email}, user);
+                        }
+                        await client.insert();
+                        response.status = 201;
+                        response.body = {
+                        "error": false,
+                        "message": "Votre enfant a bien été créé avec succès",
+                        "user": child,
+                        };
+                    }else{
+                        response.status = 409;
+                        response.body = {
+                        "error": false,
+                        "message": "Vous avez dépassé le cota de trois enfants",
+                        };
                     }
                 }
-                await client.insert();
-                response.status = 201;
-                response.body = {
-                "error": false,
-                "message": "Votre enfant a bien été créé avec succès",
-                "user": child,
-                };
                // await sendMail.Email("busi.travail@gmail.com",user.email);
             }else{
                 response.status = 409;
@@ -154,15 +163,70 @@ export default class UserController {
 
     }
 
-    async userChildDelete({ request, response }: Context) {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+    async userDeleteChild({ request, response }: Context) {
+        const data: any = await request.body()
+        // verifi le body 
+        let child:any = {};
+        // recupere les data dans le body 
+        for (const [key, value] of await data.value) {
+          child[key] = value;
+        }
+        const chil = await childdb.findOne({ email: child.email });
+        const authorization = request.headers.get("authorization");
+        if(authorization){
+            const token = await getToken(authorization);
+            let user = await new UserDB().findByEmail(token.email);
+            const childs = user?.childs || [];
+            for(var i=0; i<=childs.length;i++){
+                if(childs[i] == child.email){
+                    if(user && user.childs !== undefined){
+                        const mail:any = child.email;
+                        childs.splice(child.email,1);
+                        await userdb.updateOne(
+                            { email: user.email },
+                            { $set: {childs} },
+                          );
+                      
+                        console.log(user)
+                        await  childdb.deleteOne({email:user.email});
+                        response.status = 200;
+                        response.body = {
+                        "error": false,
+                        "message": "L'utilisateur a été supprimée avec succès",
+                        };
+                    }
+                }else{
+                    response.status = 409;
+                    response.body = {
+                    "error": true,
+                    "message":"sVous ne pouvez pas supprimer cet enfant",
+                    };
+                }
+            }
+        }
+        
     }
 
-    async userChildAll({ request, response }: Context) {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+    async userAllChild({ request, response }: Context) {
+        const authorization = request.headers.get("authorization");
+        if(authorization){
+            const token = await getToken(authorization);
+            let user = await new UserDB().findByEmail(token.email);
+            const childs = user?.childs || [];
+            let child = [];
+            if(user && user.childs !== undefined){
+                for(var i=0; i<=childs.length;i++){
+                    const chil = await childdb.findOne({ email: childs[i] });
+                    child.push(chil);
+                }
+                response.status = 201;
+                response.body = {
+                    "error": false,
+                    "message": "Votre enfant a bien été créé avec succès",
+                    "user": child,
+                };
+            }
+
+        }
     }
 }
