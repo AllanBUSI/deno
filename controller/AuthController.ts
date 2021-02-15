@@ -48,7 +48,7 @@ export default class AuthController {
             console.log("verifier bien")
             response.status = 409;
             response.body = {
-                "error": false,
+                "error": true,
                 "message": "Une ou plusieurs données sont erronées",
             };
         }else {

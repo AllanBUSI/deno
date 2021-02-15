@@ -27,8 +27,8 @@ route.post('/user/child',userM.userMiddleware,user.userAddChild);
 route.delete('/user/child',user.userChildDelete);
 route.get('/user/child',user.userChildAll);
 // songs
-route.get('/songs', audio.songs);
-route.get('/songs/:id', audio.allsongs);
+route.get('/songs', audio.allsongs);
+route.get('/songs/:id', audio.songs);
 // subcription
 route.put('subcription', autre.subcription);
 route.put('bills', autre.bills);
