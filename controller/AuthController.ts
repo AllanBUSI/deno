@@ -10,8 +10,6 @@ import { UserModels } from "../model/UserModel.ts";
 import UserDB from "../db/UserDB.ts";
 import { createToken } from "../Utils/Token.ts";
 
-
-  
 import { db } from '../db/index.ts';
 import UserInterfaces from '../interfaces/UserInterfaces.ts';
 

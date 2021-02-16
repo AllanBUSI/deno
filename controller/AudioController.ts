@@ -1,6 +1,8 @@
 import { Context, } from "https://deno.land/x/oak@v6.4.1/context.ts";
 import { play } from "https://deno.land/x/audio@0.1.0/mod.ts";
 import { getQuery } from "https://deno.land/x/oak/helpers.ts";
+import { getToken, decodeToken } from "../Utils/Token.ts";
+
 
 export default class AudioController {
 
@@ -27,6 +29,8 @@ export default class AudioController {
      }
 
      async allsongs(ctx: Context)  {
+      const authorization = ctx.request.headers.get("authorization");
+      const token = await getToken(authorization);
         ctx.response.status = 200;
         ctx.response.body = {
           "songs": [{ 
