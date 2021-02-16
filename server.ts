@@ -43,5 +43,5 @@ app.use(route.allowedMethods());
 // cron
 // import "./cron/subscribe.ts";
 // lancement serveur
-// deno run --allow-net --allow-read --unstable server.ts
+// deno run --allow-net --allow-read --unstable -A server.ts
 await app.listen({ port: PORT });

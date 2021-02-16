@@ -30,8 +30,8 @@ route.get('/user/child',user.userChildAll);
 route.get('/songs', audio.allsongs);
 route.get('/songs/:id', audio.songs);
 // subcription
-route.put('subcription', autre.subcription);
-route.put('bills', autre.bills);
+route.put('/subcription', autre.subcription);
+route.put('/bills', autre.bills);
 
 export default route;
 
