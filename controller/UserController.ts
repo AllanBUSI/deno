@@ -56,18 +56,47 @@ export default class UserController {
         }
     }
 
-    async userOff({ request, response }: Context)  {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+    async userLogout({ request, response }: Context)  {
+        
+        const authorization = request.headers.get("authorization");
+        if(authorization){
+        const token = await getToken(authorization);
+            if(token){
+                response.status = 200;
+                response.body = { 
+                    "error": false, 
+                    "message": "L'utilisateur a été déconnecté avec succès",
+                    "token":" ",
+                 };
+                return;
+            }else{
+                response.status = 401;
+                response.body = { 
+                    "error": true, 
+                    "message": "Votre token n'est pas correct" };
+                return;
+            }
+            response.status = 401;
+            response.body = { 
+                "error": true, 
+                "message": "Votre token n'est pas correct" };
+            return;
+        }else{
+            response.status = 401;
+            response.body = { 
+                "error": true, 
+                "message": "Veuillez vous connecté" };
+            return;
+        }
     }
 
     async userCart({ request, response }: Context)  {
-        response.status = 400;
+        response.status = 401;
         response.body = { "error": true, "message": "a faire" };
         return;
     }
 
+    
     async userDelete({ request, response }: Context)  {
         const authorization = request.headers.get("authorization");
         if(authorization){
@@ -75,9 +104,24 @@ export default class UserController {
         const user = await new UserDB().findByEmail(token.email);
         if(user){
             const child = user?.childs || [];
-            if(child.length > 0){
-                console.log("bien");
-            }else{
+            if(child.length == 0){
+                await  userdb.deleteOne({email:user.email});
+                response.status = 200;
+                response.body = {
+                    "error": false,
+                    "message": "Votre compte et le compte a ete supprimé avec succès",
+                };
+            }else if(child.length != 0 ){
+                for(var i=0; i < child.length; i++){
+                    const enf:any = await childdb.findOne({ email: child[i] });
+                    //console.log(enf)
+                    if(enf){
+                        if(child[i] == enf.email){
+                           await  childdb.deleteOne({email:enf.email});
+                        }
+                    }
+                     
+                }
                 await  userdb.deleteOne({email:user.email});
                 response.status = 200;
                 response.body = {
@@ -128,20 +172,29 @@ export default class UserController {
                 if(authorization){
                     const token = await getToken(authorization);
                     let user = await new UserDB().findByEmail(token.email);
-                    if(user && user.childs !== undefined){
-                        const mail:any = child.email;
-                        user.childs.push(mail);
-                        console.log(user)
-                        await  userdb.updateOne({email:user.email}, user);
+                    const childA = user?.childs || [];
+                    if(childA.length < 3){
+                        if(user && user.childs !== undefined){
+                            const mail:any = child.email;
+                            user.childs.push(mail);
+                            console.log(user)
+                            await  userdb.updateOne({email:user.email}, user);
+                        }
+                        await client.insert();
+                        response.status = 201;
+                        response.body = {
+                        "error": false,
+                        "message": "Votre enfant a bien été créé avec succès",
+                        "user": child,
+                        };
+                    }else{
+                        response.status = 409;
+                        response.body = {
+                        "error": false,
+                        "message": "Vous avez dépassé le cota de trois enfants",
+                        };
                     }
                 }
-                await client.insert();
-                response.status = 201;
-                response.body = {
-                "error": false,
-                "message": "Votre enfant a bien été créé avec succès",
-                "user": child,
-                };
                // await sendMail.Email("busi.travail@gmail.com",user.email);
             }else{
                 response.status = 409;
@@ -154,15 +207,79 @@ export default class UserController {
 
     }
 
-    async userChildDelete({ request, response }: Context) {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+    async userDeleteChild({ request, response }: Context) {
+        const data: any = await request.body()
+        // verifi le body 
+        let child:any = {};
+        // recupere les data dans le body 
+        for (const [key, value] of await data.value) {
+          child[key] = value;
+        }
+        const chil:any = await childdb.findOne({ email: child.email });
+        const authorization = request.headers.get("authorization");
+        if(authorization){
+            const token = await getToken(authorization);
+            let user = await new UserDB().findByEmail(token.email);
+            const childs = user?.childs || [];
+            for(var i=0; i<=childs.length - 1;i++){
+                if(childs[i] == chil.email){
+                    if(user && user.childs !== undefined && chil !== undefined){
+                        const mail:any = chil.email;
+                        childs.splice(chil.email,1);
+                        await userdb.updateOne(
+                            { email: user.email },
+                            { $set: {childs} },
+                          );
+                      
+                        console.log(user)
+                        await  childdb.deleteOne({email:chil.email});
+                        response.status = 200;
+                        response.body = {
+                        "error": false,
+                        "message": "L'utilisateur a été supprimée avec succès",
+                        };
+                    }
+                }else{
+                    response.status = 409;
+                    response.body = {
+                    "error": true,
+                    "message":"Vous ne pouvez pas supprimer cet enfant",
+                    };
+                }
+            }
+        }
+        
     }
 
-    async userChildAll({ request, response }: Context) {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+    async userAllChild({ request, response }: Context) {
+        const authorization = request.headers.get("authorization");
+        //je dois vider le tableau child[] a chaque entree 
+        if(authorization){
+            const token = await getToken(authorization);
+            let user = await new UserDB().findByEmail(token.email);
+            const childs = user?.childs || [];
+            let child:any = [];
+            if(user && user.childs !== undefined){
+                for(var i=0; i<=childs.length - 1;i++){
+                    const chil = await childdb.findOne({ email: childs[i] });
+                    child.push(chil);
+                }
+                response.status = 201;
+                response.body = {
+                    "error": false,
+                    "message": "Votre enfant a bien été créé avec succès",
+                    "user": child,
+                };
+            }else{
+                response.status = 400;
+                response.body = {
+                    "error": true,
+                    "message": "Une ou plusieurs données obligatoire sont manquantes",
+                    "user": child,
+                };
+                
+            }
+
+        }
     }
 }

@@ -27,6 +27,12 @@ export class Middleware {
         if (!authorization) {
           context.response.status = 401;
           return await context.response.toServerResponse();
+        }else{
+          context.response.status = 401;
+          context.response.body = {
+            "error": true,
+            "message": "Votre token n'est pas correct",
+          };
         }
       
         // vérification du token
@@ -115,65 +121,30 @@ export class Middleware {
         await next();
       }
 
-      tuteurRoleMiddleware = async (ctx: Context, next: any) => {
+      roleMiddleware = async (context: Context, next: any) => {
         // récupération du token
-        const authorization = ctx.request.headers.get("authorization");
-      
-        // s'il n'y a pas de header authorization dans la requête
-        if (!authorization) {
-          ctx.response.status = 401;
-          ctx.response.body = {
+        const authorization = context.request.headers.get("authorization");
+        if(authorization){
+          const token = await getToken(authorization);
+          const user = await new UserDB().findByEmail(token.email);
+          if (token.role as roleTypes !== "Tuteur") {
+            context.response.status = 403;
+            context.response.body = {
+              "error": true,
+              "message":
+                "Vos droits d'accès ne permettent pas d'accéder à la ressource",
+            };
+            return;
+          }
+        
+          await next();
+        }else{
+          context.response.status = 401;
+          context.response.body = {
             "error": true,
             "message": "Votre token n'est pas correct",
           };
-          return;
         }
-      
-        // vérification du token
-        const token = await getToken(authorization);
-        // s'il n'a pas de token mais un header authorization
-        if (!token) {
-          ctx.response.status = 401;
-          ctx.response.body = {
-            "error": true,
-            "message": "Votre token n'est pas correct",
-          };
-          return;
-        }
-        const user = await new UserDB().findByEmail(token.email);
-        // si l'utilisateur à un token mais qu'il s'est déconnecté
-        // on vérifie avec son token présent en bdd
-        if (!user?.token) {
-          ctx.response.status = 401;
-          ctx.response.body = {
-            "error": true,
-            "message": "Votre token n'est pas correct",
-          };
-          return;
-        }
-      
-        // s'il a un token mais qu'il n'est pas égal à celui en bdd
-        if (user.token !== authorization.split("Bearer ")[1]) {
-          ctx.response.status = 401;
-          ctx.response.body = {
-            "error": true,
-            "message": "Votre token n'est pas correct",
-          };
-          return;
-        }
-      
-        // si le token est présent mais qu'il n'est pas valide ou que son role n'est pas bon
-        if (token.role as roleTypes !== "Tuteur") {
-          ctx.response.status = 403;
-          ctx.response.body = {
-            "error": true,
-            "message":
-              "Vos droits d'accès ne permettent pas d'accéder à la ressource",
-          };
-          return;
-        }
-      
-        await next();
       }
 
       Email = async(sender: string, dest :string) => 

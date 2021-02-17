@@ -112,6 +112,12 @@ export default class AuthController {
                       "message": "Email/password incorrect",
                     };
                 }
+              }else{
+                response.status = 400;
+                response.body = {
+                  "error": true, 
+                  "message": "Votre email n'existe pas !",
+                };
               }
            }else{
             response.status = 400;
