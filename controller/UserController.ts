@@ -68,6 +68,7 @@ export default class UserController {
         return;
     }
 
+    
     async userDelete({ request, response }: Context)  {
         const authorization = request.headers.get("authorization");
         if(authorization){
@@ -75,9 +76,24 @@ export default class UserController {
         const user = await new UserDB().findByEmail(token.email);
         if(user){
             const child = user?.childs || [];
-            if(child.length > 0){
-                console.log("bien");
-            }else{
+            if(child.length == 0){
+                await  userdb.deleteOne({email:user.email});
+                response.status = 200;
+                response.body = {
+                    "error": false,
+                    "message": "Votre compte et le compte a ete supprimé avec succès",
+                };
+            }else if(child.length != 0 ){
+                for(var i=0; i < child.length; i++){
+                    const enf:any = await childdb.findOne({ email: child[i] });
+                    //console.log(enf)
+                    if(enf){
+                        if(child[i] == enf.email){
+                           await  childdb.deleteOne({email:enf.email});
+                        }
+                    }
+                     
+                }
                 await  userdb.deleteOne({email:user.email});
                 response.status = 200;
                 response.body = {
@@ -171,24 +187,24 @@ export default class UserController {
         for (const [key, value] of await data.value) {
           child[key] = value;
         }
-        const chil = await childdb.findOne({ email: child.email });
+        const chil:any = await childdb.findOne({ email: child.email });
         const authorization = request.headers.get("authorization");
         if(authorization){
             const token = await getToken(authorization);
             let user = await new UserDB().findByEmail(token.email);
             const childs = user?.childs || [];
-            for(var i=0; i<=childs.length;i++){
-                if(childs[i] == child.email){
-                    if(user && user.childs !== undefined){
-                        const mail:any = child.email;
-                        childs.splice(child.email,1);
+            for(var i=0; i<=childs.length - 1;i++){
+                if(childs[i] == chil.email){
+                    if(user && user.childs !== undefined && chil !== undefined){
+                        const mail:any = chil.email;
+                        childs.splice(chil.email,1);
                         await userdb.updateOne(
                             { email: user.email },
                             { $set: {childs} },
                           );
                       
                         console.log(user)
-                        await  childdb.deleteOne({email:user.email});
+                        await  childdb.deleteOne({email:chil.email});
                         response.status = 200;
                         response.body = {
                         "error": false,
@@ -199,7 +215,7 @@ export default class UserController {
                     response.status = 409;
                     response.body = {
                     "error": true,
-                    "message":"sVous ne pouvez pas supprimer cet enfant",
+                    "message":"Vous ne pouvez pas supprimer cet enfant",
                     };
                 }
             }
@@ -209,11 +225,12 @@ export default class UserController {
 
     async userAllChild({ request, response }: Context) {
         const authorization = request.headers.get("authorization");
+        //je dois vider le tableau child[] a chaque entree 
         if(authorization){
             const token = await getToken(authorization);
             let user = await new UserDB().findByEmail(token.email);
             const childs = user?.childs || [];
-            let child = [];
+            let child:any = [];
             if(user && user.childs !== undefined){
                 for(var i=0; i<=childs.length;i++){
                     const chil = await childdb.findOne({ email: childs[i] });
@@ -225,6 +242,14 @@ export default class UserController {
                     "message": "Votre enfant a bien été créé avec succès",
                     "user": child,
                 };
+            }else{
+                response.status = 400;
+                response.body = {
+                    "error": true,
+                    "message": "Une ou plusieurs données obligatoire sont manquantes",
+                    "user": child,
+                };
+                
             }
 
         }

@@ -27,6 +27,12 @@ export class Middleware {
         if (!authorization) {
           context.response.status = 401;
           return await context.response.toServerResponse();
+        }else{
+          context.response.status = 401;
+          context.response.body = {
+            "error": true,
+            "message": "Votre token n'est pas correct",
+          };
         }
       
         // vérification du token
@@ -115,15 +121,15 @@ export class Middleware {
         await next();
       }
 
-      roleMiddleware = async (ctx: Context, next: any) => {
+      roleMiddleware = async (context: Context, next: any) => {
         // récupération du token
-        const authorization = ctx.request.headers.get("authorization");
+        const authorization = context.request.headers.get("authorization");
         if(authorization){
           const token = await getToken(authorization);
           const user = await new UserDB().findByEmail(token.email);
           if (token.role as roleTypes !== "Tuteur") {
-            ctx.response.status = 403;
-            ctx.response.body = {
+            context.response.status = 403;
+            context.response.body = {
               "error": true,
               "message":
                 "Vos droits d'accès ne permettent pas d'accéder à la ressource",
@@ -132,6 +138,12 @@ export class Middleware {
           }
         
           await next();
+        }else{
+          context.response.status = 401;
+          context.response.body = {
+            "error": true,
+            "message": "Votre token n'est pas correct",
+          };
         }
       }
 
