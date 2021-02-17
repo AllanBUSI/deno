@@ -20,7 +20,7 @@ route.post('/login', auth.login);
 // user
 route.put('/user',userM.userMiddleware, user.userUpDate);
 route.delete('/user',userM.userMiddleware,user.userDelete);
-route.delete('/user/off',user.userOff);
+route.delete('/user/off',userM.userMiddleware,user.userLogout);
 route.put('/cart', user.userCart);
 // child
 route.post('/user/child',userM.userMiddleware,userM.roleMiddleware,user.userAddChild);

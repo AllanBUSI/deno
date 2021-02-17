@@ -56,14 +56,42 @@ export default class UserController {
         }
     }
 
-    async userOff({ request, response }: Context)  {
-        response.status = 400;
-        response.body = { "error": true, "message": "a faire" };
-        return;
+    async userLogout({ request, response }: Context)  {
+        
+        const authorization = request.headers.get("authorization");
+        if(authorization){
+        const token = await getToken(authorization);
+            if(token){
+                response.status = 200;
+                response.body = { 
+                    "error": false, 
+                    "message": "L'utilisateur a été déconnecté avec succès",
+                    "token":" ",
+                 };
+                return;
+            }else{
+                response.status = 401;
+                response.body = { 
+                    "error": true, 
+                    "message": "Votre token n'est pas correct" };
+                return;
+            }
+            response.status = 401;
+            response.body = { 
+                "error": true, 
+                "message": "Votre token n'est pas correct" };
+            return;
+        }else{
+            response.status = 401;
+            response.body = { 
+                "error": true, 
+                "message": "Veuillez vous connecté" };
+            return;
+        }
     }
 
     async userCart({ request, response }: Context)  {
-        response.status = 400;
+        response.status = 401;
         response.body = { "error": true, "message": "a faire" };
         return;
     }
@@ -232,7 +260,7 @@ export default class UserController {
             const childs = user?.childs || [];
             let child:any = [];
             if(user && user.childs !== undefined){
-                for(var i=0; i<=childs.length;i++){
+                for(var i=0; i<=childs.length - 1;i++){
                     const chil = await childdb.findOne({ email: childs[i] });
                     child.push(chil);
                 }
